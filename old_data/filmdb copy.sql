@@ -1,11 +1,5 @@
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
-CREATE TABLE merge_people(id int, should_be_id int);
-INSERT INTO merge_people VALUES(1133,1134);
-INSERT INTO merge_people VALUES(9822,9823);
-INSERT INTO merge_people VALUES(12438,12439);
-INSERT INTO merge_people VALUES(12625,12626);
-INSERT INTO merge_people VALUES(12777,12780);
 CREATE TABLE countries(country_code char(2) not null
                                  constraint "country code length"
                                    check(length(country_code)<=2),
@@ -17,6 +11,10 @@ CREATE TABLE countries(country_code char(2) not null
                                    check(length(continent)<=20),
                        primary key(country_code),
                        unique(country_name));
+INSERT INTO countries VALUES('cd','Congo Kinshasa','AFRICA');
+INSERT INTO countries VALUES('ci','Cote d''Ivoire','AFRICA');
+INSERT INTO countries VALUES('dj','Djibouti','AFRICA');
+INSERT INTO countries VALUES('eg','Egypt','AFRICA');
 CREATE TABLE movies(movieid       integer not null primary key,
                     title         varchar(100) not null
                                  constraint "title length"
@@ -32,6 +30,9 @@ CREATE TABLE movies(movieid       integer not null primary key,
                                    check(runtime+0=runtime),
                     unique(title, country, year_released),
                     foreign key(country) references countries(country_code));
+INSERT INTO movies VALUES(23,'Dhum Dhadaka','in',1985,148);
+INSERT INTO movies VALUES(24,'Diarios de motocicleta','pe',2004,126);
+INSERT INTO movies VALUES(25,'Dil Chahta Hai','in',2001,184);
 CREATE TABLE people(peopleid   integer not null primary key,
                     first_name varchar(30) null
                                  constraint "first_name length"
@@ -47,6 +48,8 @@ CREATE TABLE people(peopleid   integer not null primary key,
                                    check(died+0=died),
                     gender     char(1) not null default '?',
                     unique(surname, first_name));
+INSERT INTO people VALUES(10646,'Anthony','Newley',1931,1999,'M');
+INSERT INTO people VALUES(10647,'Barry','Newman',1938,NULL,'M');
 CREATE TABLE credits(movieid     int not null,
                      peopleid    int not null,
                      credited_as char(1) not null
@@ -55,64 +58,9 @@ CREATE TABLE credits(movieid     int not null,
                      primary key(movieid, peopleid, credited_as),
                      foreign key(movieid) references movies(movieid),
                      foreign key(peopleid) references people(peopleid));
-CREATE TABLE forum_members
-     (memberid     int not null primary key,
-      name         varchar(30) not null,
-      registered   date not null,
-      unique(name));
-INSERT INTO forum_members VALUES(1,'Harry','2017-03-08');
-INSERT INTO forum_members VALUES(2,'Strangelove','2017-04-12');
-INSERT INTO forum_members VALUES(3,'Lorelei','2017-05-09');
-INSERT INTO forum_members VALUES(4,'Harry Lime','2017-05-28');
-INSERT INTO forum_members VALUES(5,'Rick','2017-07-07');
-INSERT INTO forum_members VALUES(6,'Darth Vader','2017-07-13');
-INSERT INTO forum_members VALUES(7,'Jennifer','2017-08-31');
-INSERT INTO forum_members VALUES(8,'Holly','2018-01-07');
-INSERT INTO forum_members VALUES(9,'Vito','2018-02-06');
-INSERT INTO forum_members VALUES(10,'Sally','2018-02-21');
-CREATE TABLE forum_topics
-     (topicid      int not null primary key,
-      post_date    date not null,
-      memberid     int not null,
-      message      text not null,
-      foreign key (memberid) references forum_members(memberid));
-INSERT INTO forum_topics VALUES(1,'2018-03-12',7,'What do you think of 2001 A Space Odyssey?');
-INSERT INTO forum_topics VALUES(2,'2018-03-12',1,'Wouldn''t you in Casablanca rather be with Humphrey Bogart than the other guy??');
-INSERT INTO forum_topics VALUES(3,'2018-03-12',4,'Do you prefer Italian Renaissance or brotherly love and five hundred years of democracy and peace?');
-CREATE TABLE forum_posts
-     (topicid      int not null,
-      postid       int not null,
-      post_date    date not null,
-      memberid     int not null,
-      ancestry     varchar(1000),
-      message      text not null,
-      primary key (postid),
-      foreign key (memberid) references forum_members(memberid),
-      foreign key (topicid) references forum_topics(topicid));
-INSERT INTO forum_posts VALUES(1,1723,'2018-03-12',8,NULL,'Kubrick''s best film');
-INSERT INTO forum_posts VALUES(2,1725,'2018-03-12',10,NULL,'I don''t want to spend the rest of my life in Casablanca married to a man who runs a bar. I probably sound very snobbish to you but I don''t.');
-INSERT INTO forum_posts VALUES(1,1727,'2018-03-12',3,NULL,'I didn''t understand anything');
-INSERT INTO forum_posts VALUES(1,1732,'2018-03-12',6,'0000001723','Nothing beats Star Wars');
-INSERT INTO forum_posts VALUES(1,1733,'2018-03-12',4,'00000017230000001732','Are you kidding?');
-INSERT INTO forum_posts VALUES(2,1734,'2018-03-12',1,'0000001725','You''d rather be in a passionless marriage.');
-INSERT INTO forum_posts VALUES(2,1741,'2018-03-12',10,'00000017250000001734','And be the first lady of Czechoslovakia.');
-INSERT INTO forum_posts VALUES(1,1743,'2018-03-12',2,'0000001723','I prefer another one :-)');
-INSERT INTO forum_posts VALUES(1,1747,'2018-03-12',9,'00000017230000001732','Darth, you''ll stop trolling if I ask you gently.');
-CREATE TABLE films_francais
-     (titre   varchar(100) not null,
-      annee   int not null,
-      primary key(titre, annee));
-INSERT INTO films_francais VALUES('Les Enfants du Paradis',1945);
-INSERT INTO films_francais VALUES('Pierrot le Fou',1965);
-INSERT INTO films_francais VALUES('Les 400 coups',1959);
-INSERT INTO films_francais VALUES('L''Atalante',1934);
-INSERT INTO films_francais VALUES('Le Mépris',1963);
-INSERT INTO films_francais VALUES('Mon Oncle',1958);
-INSERT INTO films_francais VALUES('Les Yeux sans visage',1959);
-INSERT INTO films_francais VALUES('Le Salaire de la Peur',1953);
-INSERT INTO films_francais VALUES('L''Armée des Ombres',1969);
-INSERT INTO films_francais VALUES('Les Tontons Flingueurs',1963);
-INSERT INTO films_francais VALUES('Le Fabuleux Destin d''Amélie Poulain',2001);
+INSERT INTO credits VALUES(2170,15580,'A');
+INSERT INTO credits VALUES(2170,12257,'D');
+INSERT INTO credits VALUES(2170,6057,'A');
 CREATE TABLE alt_titles
        (titleid  integer not null primary key,
         movieid  int,
@@ -120,6 +68,9 @@ CREATE TABLE alt_titles
         unique(movieid, title),
         foreign key (movieid) references movies(movieid)
             on delete cascade);
+INSERT INTO alt_titles VALUES(1441,8580,'Take Off');
+INSERT INTO alt_titles VALUES(1442,8580,'국가대표');
+INSERT INTO alt_titles VALUES(1443,8101,'Kundo: Age of the Rampant');
 CREATE TABLE movie_title_ft_index2
        (title_word    varchar(50) not null,
         movieid       int not null,
